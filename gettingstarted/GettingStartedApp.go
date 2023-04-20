@@ -7,6 +7,14 @@ type person struct {
 	lname string
 }
 
+type human interface {
+	speak()
+}
+
+func saySomething(h human) {
+	h.speak()
+}
+
 type secretAgent struct {
 	person
 	isLicensed bool
@@ -37,5 +45,8 @@ func main() {
 	p.speak()
 	sa.speak()
 	sa.person.speak() // NB!
+	fmt.Println("-----")
+	saySomething(p)
+	saySomething(sa)
 
 }
