@@ -3,6 +3,7 @@ package main
 import (
 	"encoding/csv"
 	"log"
+	"net/http"
 	"os"
 	"strconv"
 	"text/template"
@@ -44,10 +45,23 @@ func parseCSV(filePath string) records {
 	return recs
 }
 
-var tpl *template.Template
+//var tpl *template.Template
+
+func foo(rw http.ResponseWriter, req *http.Request) { // req *http.Request is required so that func will be handler func(ResponseWriter, *Request)
+	records := parseCSV("table.csv")
+
+	tpl, err := template.ParseFiles("tpl.gohtml")
+	if err != nil {
+		log.Fatalln(err)
+	}
+
+	err = tpl.Execute(rw, records)
+	if err != nil {
+		log.Fatalln(err)
+	}
+}
 
 func main() {
-	tpl = template.Must(template.ParseFiles("tpl.gohtml"))
-	records := parseCSV("table.csv")
-	tpl.Execute(os.Stdout, records)
+	http.HandleFunc("/", foo)
+	http.ListenAndServe(":8080", nil)
 }
