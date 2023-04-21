@@ -21,22 +21,22 @@ func parseCSV(filePath string) records {
 	if err1 != nil {
 		log.Fatalln(err1)
 	}
+	defer src.Close()
 
 	csvFile := csv.NewReader(src)
-
 	rawRecs, err2 := csvFile.ReadAll()
 	if err2 != nil {
 		log.Fatalln(err1)
 	}
 
-	recs := records{}
+	recs := make(records, 0, len(rawRecs))
 
-	for i := 0; i < len(rawRecs); i++ {
+	for i, row := range rawRecs {
 		if i == 0 {
 			continue
 		}
-		date, _ := time.Parse("2006-01-02", rawRecs[i][0])
-		open, _ := strconv.ParseFloat(rawRecs[i][1], 64)
+		date, _ := time.Parse("2006-01-02", row[0])
+		open, _ := strconv.ParseFloat(row[1], 64)
 		record := record{date, open}
 		recs = append(recs, record)
 	}
@@ -47,9 +47,7 @@ func parseCSV(filePath string) records {
 var tpl *template.Template
 
 func main() {
-
 	tpl = template.Must(template.ParseFiles("tpl.gohtml"))
 	records := parseCSV("table.csv")
 	tpl.Execute(os.Stdout, records)
-
 }
