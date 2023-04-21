@@ -72,8 +72,14 @@ func main() {
 		},
 	}
 
-	err := tpl.ExecuteTemplate(os.Stdout, "tpl.gohtml", years)
-	if err != nil {
-		log.Fatalln(err)
+	//err := tpl.ExecuteTemplate(os.Stdout, "tpl.gohtml", years) // it's not necessary to pass a particular tpl here
+	nf, _ := os.Create("index.html")
+	err0 := tpl.Execute(nf, years)
+	err1 := tpl.Execute(os.Stdout, years)
+	if err0 != nil {
+		log.Fatalln(err0)
+	}
+	if err1 != nil {
+		log.Fatalln(err1)
 	}
 }

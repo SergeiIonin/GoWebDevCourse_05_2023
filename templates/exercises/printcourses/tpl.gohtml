@@ -7,24 +7,20 @@
 <body>
 
 {{range .}}
-    <li>
-        {{.AcaYear}}
-
-        {{.Fall.Term}}
-        {{range $index, $course := .Fall.Courses}}
+        {{.AcaYear}}<br>
+        {{.Fall.Term}}<br>
+        {{range .Fall.Courses}}
         <li>
-            {{$course.Number}} - {{$course.Name}} - {{$course.Units}}
-        </li>>
+            {{.Number}} - {{.Name}} - {{.Units}}
+        </li>
         {{end}}
 
-        {{.Spring.Term}}
-        {{range $index, $course := .Spring.Courses}}
+        {{.Spring.Term}}<br>
+        {{range .Spring.Courses}}
         <li>
-            {{$course.Number}} - {{$course.Name}} - {{$course.Units}}
-        </li>>
+            {{.Number}} - {{.Name}} - {{.Units}}
+        </li>
         {{end}}
-    </li>
-
 {{end}}
 
 </body>
