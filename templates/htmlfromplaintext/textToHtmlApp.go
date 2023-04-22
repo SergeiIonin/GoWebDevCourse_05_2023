@@ -34,6 +34,6 @@ func main() {
 	}
 	defer nf.Close()
 
-	io.Copy(nf, strings.NewReader(str)) // via read only reader
+	io.Copy(nf, strings.NewReader(str)) // via write only reader
 
 }
