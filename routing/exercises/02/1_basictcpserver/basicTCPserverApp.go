@@ -1,7 +1,7 @@
 package main
 
 import (
-	"fmt"
+	"io"
 	"log"
 	"net"
 )
@@ -11,12 +11,16 @@ func main() {
 	if err != nil {
 		log.Fatalln(err)
 	}
+	defer listener.Close()
 
 	for {
 		conn, err := listener.Accept()
 		if err != nil {
 			log.Fatalln(err)
+			continue
 		}
-		fmt.Fprintln(conn, "I see you connected")
+		io.WriteString(conn, "I see you connected")
+
+		conn.Close()
 	}
 }
