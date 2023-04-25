@@ -18,6 +18,15 @@ func serve(conn net.Conn) {
 			break
 		}
 	}
+	body := `<!DOCTYPE html><html lang="en"><head><meta charset="UTF-8"><title></title></head><body><strong>Hello World</strong></body></html>`
+
+	// unless we add any of the following 3 lines, then the browser will reject the response since it's not adhering HTTP
+	fmt.Fprint(conn, "HTTP/1.1 200 OK\r\n")
+	fmt.Fprintf(conn, "Content-Length: %d\r\n", len(body))
+	fmt.Fprint(conn, "Content-Type: text/html\r\n")
+
+	fmt.Fprint(conn, "\r\n")
+	fmt.Fprint(conn, body)
 }
 
 func main() {
