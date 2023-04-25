@@ -25,15 +25,27 @@ func meHandler(w http.ResponseWriter, req *http.Request) {
 	tpl.Execute(w, req.Form["name"][0])
 }
 
+func mev2Handler(w http.ResponseWriter, req *http.Request) {
+	tpl, err := template.ParseFiles("hello.gohtml")
+	if err != nil {
+		log.Fatalln(err)
+	}
+	err = tpl.ExecuteTemplate(w, "hello.gohtml", "Sergei")
+	if err != nil {
+		log.Fatalln(err)
+	}
+}
+
 var tpl *template.Template
 
 func init() {
-	tpl = template.Must(template.ParseFiles("tpl.gohtml"))
+	tpl = template.Must(template.ParseFiles("hello.gohtml"))
 }
 
 func main() {
 	http.HandleFunc("/", indexHandler) // we are registering a new handler on the DefaultServerMux
 	http.HandleFunc("/me", meHandler)
+	http.HandleFunc("/v2/me", mev2Handler)
 	http.HandleFunc("/dog", dogHandler)
 
 	http.ListenAndServe(":8080", nil)
