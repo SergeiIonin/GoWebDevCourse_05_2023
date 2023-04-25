@@ -28,17 +28,89 @@ func serve(conn net.Conn) {
 		}
 		i++
 	}
-	body := fmt.Sprint(
-		`<!DOCTYPE html><html lang="en"><head><meta charset="UTF-8"><title></title></head><body><strong>` +
-			`Method:` + method +
-			`URI:` + uri + `</strong></body></html>
-	`)
+	switch method {
+	case "GET":
+		if uri == "/" {
+			index(conn)
+		} else if uri == "/apply" {
+			apply(conn)
+		} else {
+			serverError(conn)
+		}
+	case "POST":
+		if uri == "/apply" {
+			applyProcess(conn)
+		} else {
+			serverError(conn)
+		}
+	default:
+		serverError(conn)
+	}
+}
 
-	// unless we add any of the following 3 lines, then the browser will reject the response since it's not adhering HTTP
-	fmt.Fprint(conn, "HTTP/1.1 200 OK\r\n")
+func serverError(conn net.Conn) {
+	body := fmt.Sprint(`
+		<!DOCTYPE html>
+		<html lang="en">
+		<head>
+		<meta charset="UTF-8">
+		<title>Hello World!</title>
+		</head>
+		<body>
+		<h1>` +
+		"This endpoint is unknown or not implemented!" +
+		`</h1>
+		</body>
+		</html>
+	`)
+	fmt.Fprint(conn, "HTTP/1.1 501 OK\r\n")
 	fmt.Fprintf(conn, "Content-Length: %d\r\n", len(body))
 	fmt.Fprint(conn, "Content-Type: text/html\r\n")
 
+	fmt.Fprint(conn, "\r\n")
+	fmt.Fprint(conn, body)
+}
+
+func index(conn net.Conn) {
+	body := `<!DOCTYPE html><html lang="en"><head><meta charet="UTF-8"><title></title></head><body>
+	<strong>INDEX</strong><br>
+	<a href="/">index</a><br>
+	<a href="/apply">apply</a><br>
+	</body></html>`
+	fmt.Fprint(conn, "HTTP/1.1 200 OK\r\n")
+	fmt.Fprintf(conn, "Content-Length: %d\r\n", len(body))
+	fmt.Fprint(conn, "Content-Type: text/html\r\n")
+	fmt.Fprint(conn, "\r\n")
+	fmt.Fprint(conn, body)
+}
+
+func apply(conn net.Conn) {
+	body := `<!DOCTYPE html><html lang="en"><head><meta charset="UTF-8"><title></title></head><body>
+	<strong>APPLY</strong><br>
+	<h1>Apply now!</h1>
+	<a href="/">index</a><br>
+	<form method="POST" action="/apply">
+	<input type="submit" value="apply">
+	</form>
+	</body></html>`
+	fmt.Fprint(conn, "HTTP/1.1 200 OK\r\n")
+	fmt.Fprintf(conn, "Content-Length: %d\r\n", len(body))
+	fmt.Fprint(conn, "Content-Type: text/html\r\n")
+	fmt.Fprint(conn, "\r\n")
+	fmt.Fprint(conn, body)
+
+}
+
+func applyProcess(conn net.Conn) {
+	body := `<!DOCTYPE html><html lang="en"><head><meta charet="UTF-8"><title></title></head><body>
+	<strong>APPLY PROCESS</strong><br>
+	<a href="/">index</a><br>
+	<a href="/apply">apply</a><br>
+	</body></html>`
+
+	fmt.Fprint(conn, "HTTP/1.1 200 OK\r\n")
+	fmt.Fprintf(conn, "Content-Length: %d\r\n", len(body))
+	fmt.Fprint(conn, "Content-Type: text/html\r\n")
 	fmt.Fprint(conn, "\r\n")
 	fmt.Fprint(conn, body)
 }
