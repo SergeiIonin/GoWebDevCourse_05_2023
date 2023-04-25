@@ -5,20 +5,34 @@ import (
 	"fmt"
 	"log"
 	"net"
+	"strings"
 )
 
 func serve(conn net.Conn) {
 	defer conn.Close()
 	sc := bufio.NewScanner(conn)
+	var method string
+	var uri string
+	i := 0
 	for sc.Scan() {
 		text := sc.Text()
+		if i == 0 {
+			parts := strings.Fields(text)
+			method = parts[0]
+			uri = parts[1]
+		}
 		fmt.Println("text = ", text)
 		if text == "" {
 			fmt.Println("breaking...")
 			break
 		}
+		i++
 	}
-	body := `<!DOCTYPE html><html lang="en"><head><meta charset="UTF-8"><title></title></head><body><strong>Hello World</strong></body></html>`
+	body := fmt.Sprint(
+		`<!DOCTYPE html><html lang="en"><head><meta charset="UTF-8"><title></title></head><body><strong>` +
+			`Method:` + method +
+			`URI:` + uri + `</strong></body></html>
+	`)
 
 	// unless we add any of the following 3 lines, then the browser will reject the response since it's not adhering HTTP
 	fmt.Fprint(conn, "HTTP/1.1 200 OK\r\n")
