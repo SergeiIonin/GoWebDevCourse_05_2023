@@ -21,13 +21,9 @@ func meHandler(w http.ResponseWriter, req *http.Request) {
 }
 
 func main() {
+	http.HandleFunc("/", indexHandler) // we are registering a new handler on the DefaultServerMux
+	http.HandleFunc("/me", meHandler)
+	http.HandleFunc("/dog", dogHandler)
 
-	mux := http.NewServeMux()
-
-	mux.HandleFunc("/", indexHandler)
-	mux.HandleFunc("/me", meHandler)
-	mux.HandleFunc("/dog", dogHandler)
-
-	http.ListenAndServe(":8080", mux)
-
+	http.ListenAndServe(":8080", nil)
 }
