@@ -8,20 +8,6 @@ import (
 	"net"
 )
 
-func handle(conn net.Conn) {
-	defer conn.Close()
-	sc := bufio.NewScanner(conn)
-	var resp string
-	for sc.Scan() {
-		text := sc.Text()
-		fmt.Println("text = ", text)
-		if text == "" {
-			break
-		}
-		resp = resp + "\n" + text
-	}
-}
-
 func main() {
 	listener, err := net.Listen("tcp", ":8080")
 	if err != nil {
@@ -36,10 +22,22 @@ func main() {
 			continue
 		}
 
-		go handle(conn)
+		sc := bufio.NewScanner(conn)
+		var resp string
+		for sc.Scan() {
+			text := sc.Text()
+			fmt.Println("text = ", text)
+			if text == "" {
+				fmt.Println("breaking...")
+				break
+			}
+			resp = resp + "\n" + text
+		}
+		fmt.Println("out of the loop")
 
-		fmt.Println("Code got here.") // if we start another connection, then goroutine closes the prev. one and we'll see this line, but not the next!
+		fmt.Println("Code got here.") // after some time the goroutine closes conn and we'll see this line, but not the next!
 		io.WriteString(conn, "I see you connected.")
 
+		conn.Close()
 	}
 }
