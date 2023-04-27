@@ -19,27 +19,26 @@ func main() {
 }
 
 func set(w http.ResponseWriter, req *http.Request) {
-	c, err := req.Cookie(visitsNumberCookie)
-	if err != nil {
-		http.SetCookie(w, &http.Cookie{
+	cookie, err := req.Cookie(visitsNumberCookie)
+	if err == http.ErrNoCookie {
+		cookie = &http.Cookie{
 			Name:  visitsNumberCookie,
-			Value: "1",
+			Value: "0",
 			Path:  "/",
-		})
-	} else {
-		count, err := strconv.Atoi(c.Value)
-		if err != nil {
-			log.Fatalln("Can't get the count for user: ", err.Error()) // todo how to recover from this?
-		} else {
-			count++
-			fmt.Println("the current count is ", count)
-			http.SetCookie(w, &http.Cookie{
-				Name:  visitsNumberCookie,
-				Value: fmt.Sprint(count),
-				Path:  "/",
-			})
 		}
 	}
+
+	count, err := strconv.Atoi(cookie.Value)
+	if err != nil {
+		log.Fatalln("Can't get the count for user: ", err.Error()) // todo how to recover from this?
+	} else {
+		count++
+		fmt.Println("the current count is ", count)
+		cookie.Value = strconv.Itoa(count)
+
+		http.SetCookie(w, cookie)
+	}
+
 	fmt.Fprintln(w, "COOKIE WRITTEN - CHECK YOUR BROWSER")
 }
 
