@@ -38,7 +38,7 @@ func main() {
 	http.HandleFunc("/bar", bar)
 	http.HandleFunc("/signup", signup)
 	http.HandleFunc("/login", login)
-	http.HandleFunc("/logout", logout)
+	http.HandleFunc("/logout", authorized(logout))
 	http.Handle("/favicon.ico", http.NotFoundHandler())
 	http.ListenAndServe(":8080", nil)
 }
@@ -176,4 +176,15 @@ func logout(w http.ResponseWriter, req *http.Request) {
 	}
 
 	http.Redirect(w, req, "/login", http.StatusSeeOther) // NB redirect to /login
+}
+
+// NB we can return the anonymous func
+func authorized(h http.HandlerFunc) http.HandlerFunc {
+	return func(w http.ResponseWriter, req *http.Request) {
+		if !alreadyLoggedIn(w, req) {
+			http.Redirect(w, req, "/", http.StatusSeeOther)
+			return
+		}
+		h.ServeHTTP(w, req)
+	}
 }
