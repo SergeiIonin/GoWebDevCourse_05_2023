@@ -6,3 +6,4 @@
    (dns will vary)
 4similarly, push template files to EC2 instance
 5) run the app, enable it via systemd
+ssh -i ~/.ssh/go_ec2_kp_1.pem ubuntu@ec2-18-212-36-127.compute-1.amazonaws.com
