@@ -60,10 +60,12 @@ To run our application after the terminal session has ended, we must do one of t
 Description=Go Server
 
 [Service]
-ExecStart=/home/<username>/<exepath>
+#ExecStart=/home/<username>/<exepath>
+ExecStart=/home/ubuntu/helloApp
+WorkingDirectory=/home/ubuntu
 User=root
 Group=root
-Restart=always
+Restart=never
 
 [Install]
 WantedBy=multi-user.target
