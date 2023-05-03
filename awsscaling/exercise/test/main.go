@@ -4,6 +4,7 @@ import (
 	"database/sql"
 	"fmt"
 	_ "github.com/go-sql-driver/mysql"
+	"io"
 	"net/http"
 	"os"
 )
@@ -22,16 +23,17 @@ func check(err error) {
 
 func main() {
 	http.HandleFunc("/persons", persons)
-	http.ListenAndServe(":80", nil)
+	http.HandleFunc("/ping", ping)
+	http.ListenAndServe(":8080", nil)
+}
+
+func ping(w http.ResponseWriter, req *http.Request) {
+	io.WriteString(w, "OK")
 }
 
 func persons(w http.ResponseWriter, req *http.Request) {
 	s := writeHostname()
-	if len(os.Args) < 1 {
-		http.Error(w, "datasource is not passed", http.StatusBadRequest)
-		return
-	}
-	datasource := os.Args[1]
+	datasource := "admin:hellogo_@tcp(helloservice1db.ciyuywmlqmty.us-east-1.rds.amazonaws.com:3306)/hello?charset=utf8"
 	db := connect(datasource)
 
 	rows, err := db.Query(`select first_name from persons;`)
@@ -50,6 +52,7 @@ func persons(w http.ResponseWriter, req *http.Request) {
 }
 
 func connect(dataSourceName string) *sql.DB {
+	fmt.Println("Connecting to db...")
 	db, err := sql.Open("mysql", dataSourceName)
 	if err != nil {
 		fmt.Println("Can't connect to datasource", err.Error())
