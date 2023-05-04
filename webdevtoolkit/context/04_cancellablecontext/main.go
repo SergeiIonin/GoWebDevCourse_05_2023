@@ -1,26 +1,35 @@
 package main
 
-import "fmt"
+import (
+	"context"
+	"fmt"
+	"time"
+)
 
 func main() {
-
-	for i := range gen() {
+	ctx, cancel := context.WithCancel(context.Background())
+	for i := range gen(ctx) {
 		fmt.Println(i)
 		if i == 5 {
+			cancel()
 			break
 		}
 	}
-
+	time.Sleep(1 * time.Minute)
 }
 
 // leaky gen
-func gen() <-chan int {
+func gen(ctx context.Context) <-chan int {
 	ch := make(chan int)
 	go func() {
 		var n int
 		for {
-			ch <- n
-			n++
+			select {
+			case <-ctx.Done():
+				return
+			case ch <- n:
+				n++
+			}
 		}
 	}()
 	return ch
