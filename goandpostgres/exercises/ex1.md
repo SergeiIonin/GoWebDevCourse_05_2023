@@ -1,0 +1,10 @@
+
+
+CREATE TABLE employees (
+    ID SERIAL PRIMARY KEY NOT NULL,
+    NAME           TEXT    NOT NULL,
+    SCORE INT NOT NULL DEFAULT 10,
+    SALARY         REAL DEFAULT 25500.00
+);
+
+INSERT INTO employees (NAME,SCORE,SALARY) VALUES ('Jasmine', 5, 55700.00), ('Orranda', 9, 65350.00);
