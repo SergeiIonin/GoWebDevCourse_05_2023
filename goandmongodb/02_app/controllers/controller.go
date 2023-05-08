@@ -26,16 +26,6 @@ func (uc UserController) GetUser(w http.ResponseWriter, r *http.Request, p httpr
 
 	var u *models.User
 
-	/*filter := bson.D{bson.E{Key: "id", Value: fmt.Sprintf(`"%s"`, p.ByName("id"))}}
-
-	res := uc.client.Database("go_webdev").Collection("users").FindOne(context.Background(), filter)
-
-	err := res.Decode(u)
-
-	if err != nil {
-		fmt.Println(err.Error())
-	}*/
-
 	filter := bson.D{bson.E{Key: "Id", Value: p.ByName("id")}}
 
 	cur, err := uc.client.Database("go_webdev").Collection("users").Find(context.Background(), filter)
