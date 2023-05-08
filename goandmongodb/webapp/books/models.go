@@ -18,7 +18,7 @@ type Book struct {
 }
 
 func AllBooks() ([]Book, error) {
-	var books []Book // should it be a pointer?
+	var books []Book
 	filter := bson.D{}
 	cur, err := config.BooksCollection.Find(context.Background(), filter)
 	if err != nil {
@@ -31,6 +31,8 @@ func AllBooks() ([]Book, error) {
 		fmt.Println("error retrieving books " + err.Error())
 		return nil, err
 	}
+	fmt.Println("Books: ")
+	fmt.Println(books)
 	return books, nil
 }
 
@@ -42,7 +44,7 @@ func OneBook(r *http.Request) (Book, error) {
 		return book, errors.New("400. Isbn is not provided.")
 	}
 
-	find := bson.E{"isbn", isbn}
+	find := bson.D{bson.E{"isbn", isbn}}
 	res := config.BooksCollection.FindOne(context.Background(), find)
 
 	if err := res.Decode(&book); err != nil {
@@ -105,9 +107,18 @@ func UpdateBook(r *http.Request) (Book, error) {
 	}
 	book.Price = float64(f64)
 
-	// update
-	filter := bson.E{"isbn", book.Isbn}
-	update := bson.M{"isbn": book.Isbn, "title": book.Title, "author": book.Author, "price": book.Price}
+	fmt.Println("[UPDATE] received isbn is " + book.Isbn)
+
+	filter := bson.D{bson.E{"isbn", book.Isbn}}
+
+	update := bson.D{{"$set",
+		bson.D{
+			bson.E{"isbn", book.Isbn},
+			bson.E{"title", book.Title},
+			bson.E{"author", book.Author},
+			bson.E{"price", book.Price},
+		}},
+	}
 
 	_, err = config.BooksCollection.UpdateOne(context.Background(), filter, update)
 
@@ -125,7 +136,7 @@ func DeleteBook(r *http.Request) error {
 		return errors.New("400. isbn is invalid")
 	}
 
-	filter := bson.E{"isbn", isbn}
+	filter := bson.D{bson.E{"isbn", isbn}}
 	_, err := config.BooksCollection.DeleteOne(context.Background(), filter)
 
 	if err != nil {

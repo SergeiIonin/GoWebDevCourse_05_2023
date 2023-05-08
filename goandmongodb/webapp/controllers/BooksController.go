@@ -54,13 +54,13 @@ func (c BooksController) CreateBook(w http.ResponseWriter, r *http.Request, p ht
 }
 
 func (c BooksController) UpdateBook(w http.ResponseWriter, r *http.Request, p httprouter.Params) {
-	bookCreated, err := books.OneBook(r)
+	bookFetched, err := books.OneBook(r)
 	if err != nil {
 		http.Error(w, "Error executing request "+err.Error(), http.StatusInternalServerError) // todo it's not always 500!
 		return
 	}
 
-	c.template.ExecuteTemplate(w, "update.gohtml", bookCreated)
+	c.template.ExecuteTemplate(w, "update.gohtml", bookFetched)
 }
 
 func (c BooksController) UpdateBookProcess(w http.ResponseWriter, r *http.Request, p httprouter.Params) {

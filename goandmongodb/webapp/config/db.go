@@ -20,7 +20,7 @@ func init() {
 	}
 
 	Db = client.Database("bookstore")
-	BooksCollection = Db.Collection("books")
+	BooksCollection = Db.Collection("bookstore")
 }
 
 func getMongoClient() *mongo.Client {
